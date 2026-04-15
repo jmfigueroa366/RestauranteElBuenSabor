@@ -1,15 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.mycompany.restauranteelbuensabor;
 
 import java.util.Scanner;
 
-/**
- *
- * @author alfre
- */
 public class RestauranteElBuenSabor {
 public static void main(String[] args) {
 Scanner sc=new Scanner(System.in);
@@ -30,6 +22,7 @@ System.out.println("========================================");
 System.out.print("Seleccione una opcion: ");
 op=sc.nextInt();
 if(op==1){
+    
 // mostrar carta
 Imprimir.mostrarCarta();
 System.out.println();
