@@ -1,107 +1,94 @@
 package com.mycompany.restauranteelbuensabor;
-//Clase encargada unicamente de moestrar informacion en consola(srp)
+// Clase encargada únicamente de mostrar información en consola (SRP)
 public class Imprimir {
-    //contantes para evitar repetir texto(evita harcodeo)
-    private static final String SEPARADOR="==============================";
-    private static final String LINEA="-------------------------------";    
-    //muestrame la carta del restaurante
-public static void mostrarCarta(){
-    //Encabezado visual
-System.out.println(SEPARADOR);
-System.out.println("    RESTAURANTE EL BUEN SABOR");
-System.out.println("    --- NUESTRA CARTA ---");
-System.out.println(LINEA);
-//Recorre todos lo productos
-for(int i=0;i<Datos.nom.length;i++){
-    //imprime numero,nombre y precio con formato
-    System.out.printf("%d. %-22s $%,.0f%n ",
-            (i+1),//numero del producto
-            Datos.nom[i],//nombre
-            Datos.p[i]);//precio
-}
-//cierre visual
-System.out.println(SEPARADOR);
-}
-//muestra el pedido actual del cliente
-public static void mostrarPedido(){
- System.out.println("---pedido actual---");
- //recorre productos
- for(int i=0;i<Datos.nom.length;i++){
-     //solo imprime los productos que tengan cantidad > 0
-     if(Datos.cant[i]>0){
-         //calcula subtotal por productos
-         double SubtotalProducto = Datos.p[i]*Datos.cant[i];
-     //imprime producto con cantidad y subtotal
-     System.out.printf("%-20s x%-6d $%,.0f%n,",
-             Datos.nom[i],
-             Datos.cant[i],
-             SubtotalProducto);
-     }
-System.out.println(LINEA);
-//muestra subtotales usando logica separada(proceso)
-System.out.printf("%-27 $%,0f%n",
-        "subtotal",
-Proceso.calcularSubtotal());
-//imprime factura completa usando logia separada(proceso)
-public static void imprimirFacturaCompleta(){
-    //obtiene resultado y calculado(separacion de responsabilidades)
-    ResultadoFactura resultado =Proceso.calcularFactura();
-    //imprime encabezado
-    imprimirEncabezado("factura NO."+ String.format("%03d",Datos.nf));
-    //imprimer productos
-    imprimirDetalleProductos();
-    //imprime totales
-    imprimirTotales(resultado);
-    //mensaje final
-    System.out.println("gracias por su visita!");
-    System.out.println("el buen sabor - valledupar");
-    System.out.println(SEPARADOR);
-    //Actualiza estado del sistema(factura,estado,total)
-    Datos.nf++;
-    Datos.est=0;
-    Datos=resultado.total;
-    //imprime solo resumen(sin detalle de productos)
-    public static void imprimirFacturaResumen(){
-        // Calcula factura
-        ResultadoFactura resultado = Proceso.calcularFactura();
-        // Encabezado con etiqueta RESUMEN
-        imprimirEncabezado("FACTURA No. " +
-                String.format("%03d", Datos.nf) + " (RESUMEN)");
-        // Solo totales
-        imprimirTotales(resultado);
-        // 🔹 Método privado: imprime encabezado de factura
-    private static void imprimirEncabezado(String titulo) {
-        System.out.println(SEPARADOR);
-        System.out.println("    RESTAURANTE EL BUEN SABOR");
-        System.out.println("    Calle 15 #8-32, Valledupar");
-        System.out.println("    NIT: 900.123.456-7");
-        System.out.println(SEPARADOR);
-        // Título dinámico
-        System.out.println(titulo);
-        System.out.println(LINEA);
-    }
-     //  Método privado: imprime productos del pedido
-    private static void imprimirDetalleProductos() {
 
-        for (int i = 0; i < Datos.nom.length; i++) {
-            if (Datos.cant[i] > 0) {
-                double subtotalProducto = Datos.p[i] * Datos.cant[i];
-                System.out.printf("%-20s x%-6d $%,.0f%n",
-                        Datos.nom[i],
-                        Datos.cant[i],
+    private static final String SEPARADOR = "==============================";
+    private static final String LINEA = "-------------------------------";
+    private static final String FORMATO_ITEM = "%-20s x%-6d $%,.0f%n";
+
+    public static void mostrarCarta() {
+        System.out.println(SEPARADOR);
+        System.out.println("    " + Datos.NOMBRE_RESTAURANTE);
+        System.out.println("    --- NUESTRA CARTA ---");
+        System.out.println(LINEA);
+        for (int i = 0; i < Datos.nombres.length; i++) {
+            System.out.printf("%d. %-22s $%,.0f%n",
+                    (i + 1),
+                    Datos.nombres[i],
+                    Datos.precios[i]);
+        }
+        System.out.println(SEPARADOR);
+    }
+
+    public static void mostrarPedido() {
+        System.out.println(LINEA);
+        System.out.println("--- PEDIDO ACTUAL ---");
+        System.out.println(LINEA);
+        for (int i = 0; i < Datos.nombres.length; i++) {
+            if (Datos.cantidades[i] > 0) {
+                double subtotalProducto = Datos.precios[i] * Datos.cantidades[i];
+                System.out.printf(FORMATO_ITEM,
+                        Datos.nombres[i],
+                        Datos.cantidades[i],
                         subtotalProducto);
             }
         }
         System.out.println(LINEA);
-    // 🔹 Método privado: imprime subtotal, IVA, propina y total
-    private static void imprimirTotales(ResultadoFactura r){
+        ResultadosFactura resultado = Proceso.calcularFactura();
+        System.out.printf("%-27s $%,.0f%n", "Subtotal:", resultado.subtotal);
+        System.out.println(SEPARADOR);
+    }
+
+    public static void imprimirFacturaCompleta() {
+        ResultadosFactura resultado = Proceso.calcularFactura();
+        imprimirEncabezado("FACTURA No. " + String.format("%03d", Datos.numeroFactura));
+        imprimirDetalleProductos();
+        imprimirTotales(resultado);
+        System.out.println("Gracias por su visita!");
+        System.out.println(SEPARADOR);
+        Datos.numeroFactura++;
+        Datos.estadoMesa = 0;
+        Datos.total = resultado.total;
+    }
+
+    public static void imprimirFacturaResumen() {
+        ResultadosFactura resultado = Proceso.calcularFactura();
+        imprimirEncabezado("FACTURA No. " +
+                String.format("%03d", Datos.numeroFactura) + " (RESUMEN)");
+        imprimirTotales(resultado);
+        Datos.numeroFactura++;
+        Datos.estadoMesa = 0;
+        Datos.total = resultado.total;
+    }
+
+    private static void imprimirEncabezado(String titulo) {
+        System.out.println(SEPARADOR);
+        System.out.println("    " + Datos.NOMBRE_RESTAURANTE);
+        System.out.println("    " + Datos.DIRECCION_RESTAURANTE);
+        System.out.println("    NIT: " + Datos.NIT_RESTAURANTE);
+        System.out.println(SEPARADOR);
+        System.out.println(titulo);
+        System.out.println(LINEA);
+    }
+
+    private static void imprimirDetalleProductos() {
+        for (int i = 0; i < Datos.nombres.length; i++) {
+            if (Datos.cantidades[i] > 0) {
+                double subtotalProducto = Datos.precios[i] * Datos.cantidades[i];
+                System.out.printf(FORMATO_ITEM,
+                        Datos.nombres[i],
+                        Datos.cantidades[i],
+                        subtotalProducto);
+            }
+        }
+        System.out.println(LINEA);
+    }
+
+    private static void imprimirTotales(ResultadosFactura r) {
         System.out.printf("%-27s $%,.0f%n", "Subtotal:", r.subtotal);
         System.out.printf("%-27s $%,.0f%n", "IVA (19%):", r.iva);
-        // Solo muestra propina si existe
         if (r.propina > 0) {
-            System.out.printf("%-27s $%,.0f%n",
-                    "Propina (10%):",
-                    r.propina);
+            System.out.printf("%-27s $%,.0f%n", "Propina (10%):", r.propina);
         }
         System.out.println(LINEA);
         System.out.printf("%-27s $%,.0f%n", "TOTAL:", r.total);
